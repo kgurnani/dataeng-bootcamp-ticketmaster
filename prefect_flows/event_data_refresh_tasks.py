@@ -53,7 +53,8 @@ def get_events_data_as_dataframe(country: str, state: str) -> DataFrame:
             formatted_events.append(extract_events_row_as_dict(row))
 
     print("Returning df")
-    return DataFrame(formatted_events)
+    df = DataFrame(formatted_events)
+    return df
 
 
 @task(log_prints=True)
@@ -74,25 +75,43 @@ def save_events_dataframe_to_gcs(df: DataFrame, country: str, state: str) -> str
 
 
 @task(log_prints=True)
-def refresh_events_data_in_bigquery(country: str, state: str, df: DataFrame):
+def prepare_bigquery_for_insert(country: str, state: str):
     with BigQueryWarehouse.load("ticketmaster-events-bq") as warehouse:
         create_table_operation = f"""
             CREATE TABLE IF NOT EXISTS ticketmaster.events (
-                event_name
-                event_tid
-                event_url
-                public_sale_start_date_time
-                presale
-                event_start_gmt_datetime
-                event_start_local_date
-                event_start_local_time
-                event_timezone
+                event_name STRING,
+                event_tid STRING,
+                public_sale_start_date_time DATETIME,
+                presale BOOL,
+                event_start_utc_date_time DATETIME,
+                event_start_local_date DATE,
+                event_start_local_time TIME,
+                event_timezone STRING,
+                segment STRING,
+                genre STRING,
+                sub_genre STRING,
+                promoter STRING,
+                venue_name STRING,
+                venue_tid STRING,
+                venue_timezone STRING,
+                venue_city_name STRING,
+                venue_state_name STRING,
+                venue_state_code STRING,
+                venue_country_name STRING,
+                venue_country_code STRING,
+                number_of_attractions INT64
             )
+            CLUSTER BY
+                venue_state_code,
+                venue_country_code
         """
+        warehouse.execute(create_table_operation)
+        time.sleep(10)
         delete_operation = f"""
-            DELETE FROM ticketmaster.events WHERE country_code = {country} AND state_code = {state}
+            DELETE FROM ticketmaster.events WHERE venue_country_code = '{country}' AND venue_state_code = '{state}'
         """
-    return 1
+        warehouse.execute(delete_operation)
+        time.sleep(10)
 
 
 @task(log_prints=True)
