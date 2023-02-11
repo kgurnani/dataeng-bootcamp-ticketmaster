@@ -7,6 +7,7 @@ from event_data_refresh_tasks import (
 from prefect_gcp import GcpCredentials
 from prefect_gcp.bigquery import bigquery_insert_stream
 from prefect.blocks.system import String
+from prefect_dbt.cli.commands import trigger_dbt_cli_command
 
 
 @flow(name="Get upcoming events data", log_prints=True)
@@ -28,6 +29,8 @@ def get_upcoming_events_data(country: str, state: str):
         gcp_credentials=gcp_credentials,
     )
     print(result)
+    dbt_project_dir_block = String.load("de-capstone-dbt-project-dir")
+    trigger_dbt_cli_command("dbt run", project_dir=dbt_project_dir_block.value)
 
 
 if __name__ == "__main__":

@@ -113,7 +113,3 @@ def prepare_bigquery_for_insert(country: str, state: str):
         warehouse.execute(delete_operation)
         time.sleep(10)
 
-
-@task(log_prints=True)
-def run_dbt_transformations():
-    return 1

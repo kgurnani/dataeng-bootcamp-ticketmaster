@@ -1,0 +1,53 @@
+###
+### A complete description of a Prefect Deployment for flow 'Get upcoming events data'
+###
+name: canada_alberta_events
+description: null
+version: db4ca696256ea15def9f7c70590b3192
+# The work queue that will handle this deployment's runs
+work_queue_name: events_queue
+work_pool_name: null
+tags: []
+parameters:
+  country: CA
+  state: AB
+schedule: 
+  cron: 0 8 * * *
+is_schedule_active: true
+infra_overrides: {}
+infrastructure:
+  type: process
+  env: {}
+  labels: {}
+  name: null
+  command: null
+  stream_output: true
+  working_dir: null
+  block_type_slug: process
+  _block_type_slug: process
+
+###
+### DO NOT EDIT BELOW THIS LINE
+###
+flow_name: Get upcoming events data
+manifest_path: null
+storage: null
+path: /root/capstone-project
+entrypoint: prefect_flows/event_data_refresh_flows.py:get_upcoming_events_data
+parameter_openapi_schema:
+  title: Parameters
+  type: object
+  properties:
+    country:
+      title: country
+      position: 0
+      type: string
+    state:
+      title: state
+      position: 1
+      type: string
+  required:
+  - country
+  - state
+  definitions: null
+timestamp: '2023-02-10T23:06:28.493430+00:00'

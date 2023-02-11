@@ -37,9 +37,15 @@ def extract_events_row_as_dict(row: dict) -> dict:
         "event_start_local_date": row["dates"]["start"]["localDate"],
         "event_start_local_time": row["dates"]["start"].get("localTime", "00:00:00"),
         "event_timezone": row["dates"].get("timezone", "NONE"),
-        "segment": row["classifications"][0].get("segment", {}).get("name", "NONE"),
-        "genre": row["classifications"][0].get("genre", {}).get("name", "NONE"),
-        "sub_genre": row["classifications"][0].get("subGenre", {}).get("name", "NONE"),
+        "segment": row.get("classifications", [{}])[0]
+        .get("segment", {})
+        .get("name", "NONE"),
+        "genre": row.get("classifications", [{}])[0]
+        .get("genre", {})
+        .get("name", "NONE"),
+        "sub_genre": row.get("classifications", [{}])[0]
+        .get("subGenre", {})
+        .get("name", "NONE"),
         "promoter": row.get("promoter", {}).get("name", "NOT SPECIFIED"),
         "venue_name": row["_embedded"]["venues"][0]["name"],
         "venue_tid": row["_embedded"]["venues"][0]["id"],
