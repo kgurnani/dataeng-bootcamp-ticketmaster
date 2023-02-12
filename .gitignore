@@ -4,3 +4,4 @@ dbt/ticketmaster/target/
 dbt/ticketmaster/dbt_packages/
 dbt/logs/
 dbt/ticketmaster/logs/
+venv/
