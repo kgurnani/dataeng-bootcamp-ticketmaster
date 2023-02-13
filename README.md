@@ -98,4 +98,35 @@ Now you can use the steps below to generate resources inside the GCP:
 > Note: In steps 3 and 4 Terraform may ask you to specify the Project ID. Please use the ID that you noted down 
 earlier at the project setup stage.
 > 
-If you would like to remove your stack from the Cloud, use the `terraform destroy` command. 
+If you would like to remove your stack from the Cloud, use the `terraform destroy` command.
+
+### 4. Prefect and Dbt
+The next steps provide you with the instructions of running Prefect, which will allow you to run the entire 
+orchestration, taking into account that you have already set up a GCP account.
+
+#### Setup
+* Setup [conda](https://www.anaconda.com/products/distribution) or [virtualenv](https://docs.python.org/3/library/venv.html) with Python 3.9
+* After activating the environment, run `pip install -r requirements.txt`
+* To use prefect cloud, create an account and workspace following [this quickstart](https://docs.prefect.io/ui/cloud-quickstart/), and authenticate with the following command `prefect cloud login`
+* Register the `prefect-gcp` block with `prefect block register -m prefect_gcp`
+* Create the following [Prefect Blocks](https://docs.prefect.io/ui/blocks/):
+  * Type: `BigQuery Warehouse`, Name: `ticketmaster-events-bq` for connecting to BigQuery
+  * Type: `GCP Credentials`, Name: `de-zoomcamp-capstone-sa` with GCP credentials
+  * Type: `String`, Name: `de-capstone-dbt-project-dir` string with full path to `/path/to/repo/dbt/ticketmaster`
+  * Type: `String`, Name: `de-zoomcamp-gcp-project` string with gcp project name
+  * Type: `GCS Bucket`, Name: `ticketmaster-bucket` with Bucket Name created by the terraform script
+  * Type: `String`, Name: `ticketmaster-api-key` string with your ticketmaster api key
+* Create a [Dbt Profile](https://docs.getdbt.com/docs/get-started/connection-profiles) named `ticketmaster`
+* Run first flow `python prefect_flows/event_data_refresh_flows.py`
+* Create deployments for scheduling flows using [this quickstart](https://docs.prefect.io/concepts/deployments/), example deployments can be found in `prefect_deployments/`. The following 2 params are required:
+  * country: Country code, ex: `CA`
+  * state: State code, ex: `ON`
+* Start a prefect agent in the background, one easy way to do this is: `nohup prefect agent start -q <deployment_queue_name> &`
+
+### 6. Google Data Studio
+The [final dashboard](https://lookerstudio.google.com/reporting/3f07a3b4-a909-4506-80d2-00ad4af6ca5b) includes three charts:
+1. A table where you can explore upcoming events by Segment, Genre and City, with the ability to filter by country, state and a date range
+2. A pie chart that shows all Music events by genre
+3. A table that shows the genre with most events by city
+
+![image](.github/lookerstudio-ticketmaster.PNG)
