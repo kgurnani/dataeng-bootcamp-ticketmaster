@@ -123,7 +123,7 @@ orchestration, taking into account that you have already set up a GCP account.
   * state: State code, ex: `ON`
 * Start a prefect agent in the background, one easy way to do this is: `nohup prefect agent start -q <deployment_queue_name> &`
 
-### 6. Google Data Studio
+### 5. Google Data Studio
 The [final dashboard](https://lookerstudio.google.com/reporting/3f07a3b4-a909-4506-80d2-00ad4af6ca5b) includes three charts:
 1. A table where you can explore upcoming events by Segment, Genre and City, with the ability to filter by country, state and a date range
 2. A pie chart that shows all Music events by genre
